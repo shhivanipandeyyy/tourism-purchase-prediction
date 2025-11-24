@@ -1,48 +1,43 @@
-import streamlit as st
 import pandas as pd
 import joblib
-import os
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
+from sklearn.compose import make_column_transformer
+import xgboost as xgb
 
-# Path to the trained model
-model_path = "tourism_project/model_building/tourism_xgb_model.pkl"
+# Load dataset
+df = pd.read_csv("tourism_project/data/tourism.csv")
 
-if not os.path.exists(model_path):
-    st.error(f"Model not found at {model_path}. Please check the path.")
-else:
-    model = joblib.load(model_path)
-    st.success("Model loaded successfully!")
+# Encode categorical column
+label_encoder = LabelEncoder()
+df['TypeofContact'] = label_encoder.fit_transform(df['TypeofContact'])
 
-# ---------------- App Inputs ----------------
-st.title("Tourism Purchase Prediction")
-st.write("Enter customer details to predict if they will purchase:")
+# Define target and features
+target_col = 'ProdTaken'
+X = df.drop(columns=[target_col, 'CustomerID'])
+y = df[target_col]
 
-age = st.number_input("Age", min_value=18, max_value=100, value=30)
-duration = st.number_input("DurationOfPitch", min_value=1, max_value=60, value=5)
-num_person_visiting = st.number_input("NumberOfPersonVisiting", min_value=1, max_value=10, value=2)
-num_followups = st.number_input("NumberOfFollowups", min_value=0, max_value=20, value=1)
-property_star = st.number_input("PreferredPropertyStar", min_value=1, max_value=5, value=3)
-num_trips = st.number_input("NumberOfTrips", min_value=0, max_value=50, value=2)
-monthly_income = st.number_input("MonthlyIncome", min_value=1000, max_value=100000, value=30000)
-num_children = st.number_input("NumberOfChildrenVisiting", min_value=0, max_value=10, value=1)
-pitch_score = st.number_input("PitchSatisfactionScore", min_value=1, max_value=5, value=3)
+# Define numeric and categorical features
+numeric_features = ['Age', 'DurationOfPitch', 'NumberOfPersonVisiting', 'NumberOfFollowups', 
+                    'PreferredPropertyStar', 'NumberOfTrips', 'MonthlyIncome', 
+                    'NumberOfChildrenVisiting', 'PitchSatisfactionScore']
+categorical_features = ['TypeofContact', 'Occupation', 'Gender', 'ProductPitched', 'MaritalStatus', 'Designation']
 
-type_of_contact = st.selectbox("TypeofContact", ["Self Enquiry", "Company Provided"])
-occupation = st.selectbox("Occupation", ["Salaried", "Business", "Self Employed", "Other"])
-gender = st.selectbox("Gender", ["Male", "Female"])
-product_pitched = st.selectbox("ProductPitched", ["Basic", "Standard", "Deluxe"])
-marital_status = st.selectbox("MaritalStatus", ["Single", "Married"])
-designation = st.text_input("Designation", value="Manager")
+# Preprocessing pipeline
+preprocessor = make_column_transformer(
+    (StandardScaler(), numeric_features),
+    (OneHotEncoder(handle_unknown='ignore'), categorical_features)
+)
 
-input_data = pd.DataFrame([[age, duration, num_person_visiting, num_followups, property_star,
-                            num_trips, monthly_income, num_children, pitch_score,
-                            type_of_contact, occupation, gender, product_pitched, marital_status, designation]],
-                          columns=['Age', 'DurationOfPitch', 'NumberOfPersonVisiting', 'NumberOfFollowups', 
-                                   'PreferredPropertyStar', 'NumberOfTrips', 'MonthlyIncome', 
-                                   'NumberOfChildrenVisiting', 'PitchSatisfactionScore', 
-                                   'TypeofContact', 'Occupation', 'Gender', 'ProductPitched', 
-                                   'MaritalStatus', 'Designation'])
+# Model
+xgb_model = xgb.XGBClassifier(random_state=42)
 
-if st.button("Predict Purchase") and os.path.exists(model_path):
-    prediction = model.predict(input_data)[0]
-    st.success(f"Predicted Purchase: {'Yes' if prediction==1 else 'No'}")
+# Complete pipeline
+pipeline = make_pipeline(preprocessor, xgb_model)
 
+# Train the model
+pipeline.fit(X, y)
+
+# Save to .pkl
+joblib.dump(pipeline, "tourism_project/model_building/tourism_xgb_model.pkl")
+print("Model saved successfully!")
