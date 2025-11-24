@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 # Load the trained model
-model_path = "../model_building/tourism_xgb_model.pkl"
+model_path = "tourism_project/model_building/tourism_xgb_model.pkl"
 model = joblib.load(model_path)
 
 st.title("Tourism Purchase Prediction")
