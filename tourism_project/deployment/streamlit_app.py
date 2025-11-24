@@ -1,7 +1,7 @@
 import joblib
+import os
 
-# Simple path since the model is in the same folder
-model_path = "tourism_xgb_model.pkl"
-
-# Load the model
+# Path from deployment/ folder to model_building/
+model_path = "../model_building/tourism_xgb_model.pkl"
 model = joblib.load(model_path)
+print("Model loaded successfully!")
