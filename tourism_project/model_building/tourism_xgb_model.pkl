@@ -1,16 +1,21 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import os
 
-# Load the trained model
+# Path to the trained model
 model_path = "tourism_project/model_building/tourism_xgb_model.pkl"
-model = joblib.load(model_path)
 
+if not os.path.exists(model_path):
+    st.error(f"Model not found at {model_path}. Please check the path.")
+else:
+    model = joblib.load(model_path)
+    st.success("Model loaded successfully!")
+
+# ---------------- App Inputs ----------------
 st.title("Tourism Purchase Prediction")
-
 st.write("Enter customer details to predict if they will purchase:")
 
-# Example input fields (matching your features)
 age = st.number_input("Age", min_value=18, max_value=100, value=30)
 duration = st.number_input("DurationOfPitch", min_value=1, max_value=60, value=5)
 num_person_visiting = st.number_input("NumberOfPersonVisiting", min_value=1, max_value=10, value=2)
@@ -21,7 +26,6 @@ monthly_income = st.number_input("MonthlyIncome", min_value=1000, max_value=1000
 num_children = st.number_input("NumberOfChildrenVisiting", min_value=0, max_value=10, value=1)
 pitch_score = st.number_input("PitchSatisfactionScore", min_value=1, max_value=5, value=3)
 
-# Example categorical features (you can use selectboxes)
 type_of_contact = st.selectbox("TypeofContact", ["Self Enquiry", "Company Provided"])
 occupation = st.selectbox("Occupation", ["Salaried", "Business", "Self Employed", "Other"])
 gender = st.selectbox("Gender", ["Male", "Female"])
@@ -29,17 +33,16 @@ product_pitched = st.selectbox("ProductPitched", ["Basic", "Standard", "Deluxe"]
 marital_status = st.selectbox("MaritalStatus", ["Single", "Married"])
 designation = st.text_input("Designation", value="Manager")
 
-# Collect all inputs into a DataFrame
-input_data = pd.DataFrame([[
-    age, duration, num_person_visiting, num_followups, property_star,
-    num_trips, monthly_income, num_children, pitch_score,
-    type_of_contact, occupation, gender, product_pitched, marital_status, designation
-]], columns=[
-    'Age', 'DurationOfPitch', 'NumberOfPersonVisiting', 'NumberOfFollowups', 'PreferredPropertyStar',
-    'NumberOfTrips', 'MonthlyIncome', 'NumberOfChildrenVisiting', 'PitchSatisfactionScore',
-    'TypeofContact', 'Occupation', 'Gender', 'ProductPitched', 'MaritalStatus', 'Designation'
-])
+input_data = pd.DataFrame([[age, duration, num_person_visiting, num_followups, property_star,
+                            num_trips, monthly_income, num_children, pitch_score,
+                            type_of_contact, occupation, gender, product_pitched, marital_status, designation]],
+                          columns=['Age', 'DurationOfPitch', 'NumberOfPersonVisiting', 'NumberOfFollowups', 
+                                   'PreferredPropertyStar', 'NumberOfTrips', 'MonthlyIncome', 
+                                   'NumberOfChildrenVisiting', 'PitchSatisfactionScore', 
+                                   'TypeofContact', 'Occupation', 'Gender', 'ProductPitched', 
+                                   'MaritalStatus', 'Designation'])
 
-if st.button("Predict Purchase"):
+if st.button("Predict Purchase") and os.path.exists(model_path):
     prediction = model.predict(input_data)[0]
     st.success(f"Predicted Purchase: {'Yes' if prediction==1 else 'No'}")
+
