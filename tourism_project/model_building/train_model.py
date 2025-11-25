@@ -20,10 +20,11 @@ from huggingface_hub import HfApi
 api = HfApi()
 
 # Paths for tourism dataset CSVs on Hugging Face
-Xtrain_path = "hf://datasets/shivaniPandey/tourism-purchase-predictor/Xtrain.csv"
-Xtest_path  = "hf://datasets/shivaniPandey/tourism-purchase-predictor/Xtest.csv"
-ytrain_path = "hf://datasets/shivaniPandey/tourism-purchase-predictor/ytrain.csv"
-ytest_path  = "hf://datasets/shivaniPandey/tourism-purchase-predictor/ytest.csv"
+Xtrain_path = "hf://models/shivaniPandey/tourism-purchase-predictor/Xtrain.csv"
+Xtest_path  = "hf://models/shivaniPandey/tourism-purchase-predictor/Xtest.csv"
+ytrain_path = "hf://models/shivaniPandey/tourism-purchase-predictor/ytrain.csv"
+ytest_path  = "hf://models/shivaniPandey/tourism-purchase-predictor/ytest.csv"
+
 
 
 Xtrain = pd.read_csv(Xtrain_path)
