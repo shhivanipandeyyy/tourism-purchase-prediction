@@ -138,9 +138,7 @@ with mlflow.start_run():
 
 import joblib
 
-joblib.dump(model_pipeline, "tourism_xgb_model.pkl")
-print("Model saved locally.")
-
+joblib.dump(model_pipeline, "tourism_xgb_model.joblib")
 
 # Upload to Hugging Face
 repo_id = "shivaniPandey/tourism-purchase-predictor"
@@ -160,8 +158,8 @@ repo_type = "model"
 
         # Upload tourism model to Hugging Face
 api.upload_file(
-    path_or_fileobj="tourism_project/model_building/tourism_xgb_model.pkl",  # local file
-    path_in_repo="tourism_xgb_model.pkl",  # file name in the repo
+    path_or_fileobj="tourism_project/model_building/tourism_xgb_model.joblib",
+    path_in_repo="tourism_xgb_model.joblib",
     repo_id="shivaniPandey/tourism-purchase-predictor",  # your HF repo
     repo_type="model"
 )
