@@ -145,14 +145,15 @@ repo_id = "shivaniPandey/tourism-purchase-predictor"
 repo_type = "model"
 
 
-  # Step 1: Check if the space exists
-    try:
-        api.repo_info(repo_id=repo_id, repo_type=repo_type)
-        print(f"Space '{repo_id}' already exists. Using it.")
-    except RepositoryNotFoundError:
-        print(f"Space '{repo_id}' not found. Creating new space...")
-        create_repo(repo_id=repo_id, repo_type=repo_type, private=False)
-        print(f"Space '{repo_id}' created.")
+  # # Step 1: Check if the model repo exists
+try:
+    api.repo_info(repo_id=repo_id, repo_type=repo_type)
+    print(f"Model repo '{repo_id}' already exists. Using it.")
+except RepositoryNotFoundError:
+    print(f"Model repo '{repo_id}' not found. Creating new repo...")
+    create_repo(repo_id=repo_id, repo_type=repo_type, private=False)
+    print(f"Model repo '{repo_id}' created.")
+
 
 
 
