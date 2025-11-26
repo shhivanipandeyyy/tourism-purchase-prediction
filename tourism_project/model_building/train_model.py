@@ -80,6 +80,30 @@ param_grid = {
 # Model pipeline
 model_pipeline = make_pipeline(preprocessor, xgb_model)
 
+
+# for data manipulation
+import pandas as pd
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import make_column_transformer
+from sklearn.pipeline import make_pipeline
+
+# model
+import xgboost as xgb
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score, classification_report, recall_score
+
+# save model
+import joblib
+import os
+
+# Hugging Face
+from huggingface_hub import login, HfApi, create_repo
+from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
+
+# MLflow  
+import mlflow
+import mlflow.sklearn
+
 # Start MLflow run
 with mlflow.start_run():
     # Hyperparameter tuning
